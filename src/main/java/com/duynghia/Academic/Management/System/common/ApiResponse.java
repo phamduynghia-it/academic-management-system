@@ -1,4 +1,4 @@
-package com.duynghia.Academic.Management.System.identity.common;
+package com.duynghia.Academic.Management.System.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

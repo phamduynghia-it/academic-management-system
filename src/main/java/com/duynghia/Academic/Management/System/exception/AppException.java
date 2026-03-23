@@ -1,4 +1,4 @@
-package com.duynghia.Academic.Management.System.identity.exception;
+package com.duynghia.Academic.Management.System.exception;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,6 +1,6 @@
-package com.duynghia.Academic.Management.System.identity.exception;
+package com.duynghia.Academic.Management.System.exception;
 
-import com.duynghia.Academic.Management.System.identity.common.ApiResponse;
+import com.duynghia.Academic.Management.System.common.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

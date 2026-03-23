@@ -1,6 +1,6 @@
 package com.duynghia.Academic.Management.System.identity.controller;
 
-import com.duynghia.Academic.Management.System.identity.common.ApiResponse;
+import com.duynghia.Academic.Management.System.common.ApiResponse;
 import com.duynghia.Academic.Management.System.identity.dto.request.UserCreationRequest;
 import com.duynghia.Academic.Management.System.identity.dto.response.UserResponse;
 import com.duynghia.Academic.Management.System.identity.service.IUserService;
