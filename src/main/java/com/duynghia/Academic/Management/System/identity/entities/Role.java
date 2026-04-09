@@ -1,5 +1,6 @@
 package com.duynghia.Academic.Management.System.identity.entities;
 
+import com.duynghia.Academic.Management.System.identity.enums.RoleName;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -15,7 +16,8 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer roleId;
 
+    @Enumerated(EnumType.STRING)
     @NotBlank
     @Column(unique = true, nullable = false)
-    private String roleName;
+    private RoleName roleName;
 }

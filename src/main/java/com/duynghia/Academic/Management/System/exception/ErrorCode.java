@@ -16,11 +16,11 @@ public enum ErrorCode {
     UNAUTHORIZED(1016, "Bạn không có quyền truy cập", HttpStatus.FORBIDDEN),
     USERNAME_REQUIRED(1002, "Tên đăng nhập không được để trống", HttpStatus.BAD_REQUEST),
     PASSWORD_REQUIRED(1003, "Mật khẩu không được để trống", HttpStatus.BAD_REQUEST),
-    PASSWORD_TOO_SHORT(1004, "Mật khẩu tối thiểu {min} ký tự", HttpStatus.BAD_REQUEST),
+    INVALID_PASSWORD(1004, "Mật khẩu phải nằm trong khoảng {min} đến {max} kí tự", HttpStatus.BAD_REQUEST),
     EMAIL_REQUIRED(1005, "Email không được để trống", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL(1006, "Email không đúng định dạng", HttpStatus.BAD_REQUEST),
     ROLE_REQUIRED(1007, "Vai trò không được để trống", HttpStatus.BAD_REQUEST),
-    USERNAME_TOO_SHORT(1008, "tên đăng nhập tối thiểu {min} ký tự", HttpStatus.BAD_REQUEST),
+    INVALID_USERNAME(1008, "Mật khẩu phải nằm trong khoảng {min} đến {max} kí tự", HttpStatus.BAD_REQUEST),
     USER_EXISTED(1010, "Tên đăng nhập đã tồn tại", HttpStatus.BAD_REQUEST),
     ROLE_NOT_EXISTED(1009, "Vai trò không tồn tại", HttpStatus.NOT_FOUND),
 
@@ -51,8 +51,48 @@ public enum ErrorCode {
     CLASS_NAME_REQUIRED(2032, "Tên lớp không được để trống", HttpStatus.BAD_REQUEST),
     CLASS_NAME_INVALID_LENGTH(2033, "Tên lớp không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
     COURSE_YEAR_REQUIRED(2034, "Khóa học không được để trống", HttpStatus.BAD_REQUEST),
-    COURSE_YEAR_INVALID_LENGTH(2035, "Khóa học không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST);
+    COURSE_YEAR_INVALID_LENGTH(2035, "Khóa học không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
 
+
+    STUDENT_ID_REQUIRED(3001, "Mã sinh viên không được để trống", HttpStatus.BAD_REQUEST),
+    STUDENT_ID_INVALID_LENGTH(3002, "Mã sinh viên không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
+    FULL_NAME_INVALID_LENGTH(3003, "Họ tên không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
+
+    PROGRAM_ID_INVALID_LENGTH(3006, "Mã chương trình đào tạo không vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
+
+    LECTURER_ID_REQUIRED(3101, "Mã giảng viên không được để trống", HttpStatus.BAD_REQUEST),
+    LECTURER_ID_INVALID_LENGTH(3102, "Mã giảng viên không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
+    ACADEMIC_TITLE_INVALID_LENGTH(3103, "Học hàm không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
+    DEGREE_INVALID_LENGTH(3104, "Học vị không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
+    POSITION_INVALID_LENGTH(3105, "Chức danh không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
+
+
+    FULLNAME_REQUIRED(1011, "Họ và tên không được để trống", HttpStatus.BAD_REQUEST),
+    PROGRAM_REQUIRED(4026, "Chương trình đào tạo không được để trống", HttpStatus.BAD_REQUEST),
+
+
+    CLASS_NOT_FOUND(4001, "Không tìm thấy thông tin lớp học", HttpStatus.NOT_FOUND),
+    // --- Series 4000: Lỗi KHÔNG TÌM THẤY (NOT FOUND) ---
+
+    FACULTY_NOT_FOUND(4003, "Không tìm thấy thông tin khoa", HttpStatus.NOT_FOUND),
+    PROGRAM_NOT_FOUND(4004, "Không tìm thấy thông tin chương trình đào tạo", HttpStatus.NOT_FOUND),
+    COURSE_NOT_FOUND(4005, "Không tìm thấy thông tin học phần", HttpStatus.NOT_FOUND),
+    SECTION_NOT_FOUND(4006, "Không tìm thấy thông tin lớp học phần", HttpStatus.NOT_FOUND),
+    STUDENT_NOT_FOUND(4007, "Không tìm thấy thông tin hồ sơ sinh viên", HttpStatus.NOT_FOUND),
+    LECTURER_NOT_FOUND(4008, "Không tìm thấy thông tin hồ sơ giảng viên", HttpStatus.NOT_FOUND),
+
+    // --- Series 4010: Lỗi TRÙNG LẶP DỮ LIỆU (EXISTED / CONFLICT) ---
+    PROGRAM_EXISTED(4011, "Mã chương trình đào tạo đã tồn tại trong hệ thống", HttpStatus.BAD_REQUEST),
+    COURSE_EXISTED(4012, "Mã học phần đã tồn tại trong hệ thống", HttpStatus.BAD_REQUEST),
+    SECTION_EXISTED(4013, "Mã lớp học phần đã được mở trong hệ thống", HttpStatus.BAD_REQUEST),
+
+    // --- Series 4020: Lỗi LOGIC NGHIỆP VỤ (BUSINESS RULE) ---
+    COURSE_ALREADY_IN_PROGRAM(4021, "Học phần này đã được thêm vào chương trình đào tạo từ trước", HttpStatus.BAD_REQUEST),
+    STUDENT_ALREADY_IN_SECTION(4022, "Sinh viên đã đăng ký lớp học phần này rồi", HttpStatus.BAD_REQUEST),
+    PREREQUISITE_NOT_MET(4023, "Sinh viên chưa tích lũy đủ học phần tiên quyết để đăng ký môn này", HttpStatus.BAD_REQUEST),
+    SECTION_IS_FULL(4024, "Lớp học phần đã đạt số lượng đăng ký tối đa", HttpStatus.BAD_REQUEST),
+    INVALID_SEMESTER(4025, "Học kỳ đăng ký không hợp lệ", HttpStatus.BAD_REQUEST),
+    DEPARTMENT_NOT_FOUND(4002, "Không tìm thấy thông tin bộ môn", HttpStatus.NOT_FOUND);
 
     int code;
     String message;
