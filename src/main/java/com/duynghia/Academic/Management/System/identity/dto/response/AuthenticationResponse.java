@@ -1,6 +1,5 @@
 package com.duynghia.Academic.Management.System.identity.dto.response;
 
-import com.duynghia.Academic.Management.System.identity.enums.RoleName;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +10,6 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse {
-    String username;
-    String email;
-    RoleName roleName;
+public class AuthenticationResponse {
+    String token;
 }

@@ -22,7 +22,10 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,14 @@ public class UserService implements IUserService {
     StudentRepository studentRepository;
     StudentClassRepository studentClassRepository;
     DepartmentRepository departmentRepository;
+    PasswordEncoder passwordEncoder;
+
+    @Override
+    public List<UserResponse> getAllUser() {
+        return userRepository.findAll().stream().map(userMapper::toUserResponse)
+
+                .toList();
+    }
 
     @Transactional
     @Override
@@ -45,6 +56,7 @@ public class UserService implements IUserService {
 
         User user = userMapper.toUser(request);
         user.setStatus(UserStatus.ACTIVE);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         RoleName roleName = RoleName.valueOf(request.getRole());
         Role role = roleRepository.findByRoleName(roleName)
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
@@ -89,4 +101,5 @@ public class UserService implements IUserService {
 
         return userMapper.toUserResponse(user);
     }
+
 }

@@ -2,7 +2,7 @@ package com.duynghia.Academic.Management.System.identity.entities;
 
 import com.duynghia.Academic.Management.System.identity.enums.RoleName;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +17,7 @@ public class Role {
     private Integer roleId;
 
     @Enumerated(EnumType.STRING)
-    @NotBlank
+    @NotNull
     @Column(unique = true, nullable = false)
     private RoleName roleName;
 }

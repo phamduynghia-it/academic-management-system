@@ -1,16 +1,21 @@
 server:
-   port: 8080
-   servlet:
-      context-path: /api
+  port: 8080
+  servlet:
+    context-path: /api
 spring:
-   datasource:
-      url : "jdbc:mysql://localhost:3306/academic_management_system"
-      username: root
-      password: root
-   jpa:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/academic_management_system"
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
       hibernate:
-         ddl-auto: update
-      show-sql: true
-      properties:
-         hibernate:
-            format_sql: true
+        format_sql: true
+app:
+  jwt:
+    secret-key: ${JWT_SECRET:kPcfbGt6N9apSH6HIvYXj03suDZd5HTYdIlvmayfsOWr0VgnTlrb0ZLNRvleU4cl}
+    expiration-ms: 3600000
+    refresh-expiration-ms: 604800000

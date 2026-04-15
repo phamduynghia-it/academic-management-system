@@ -14,6 +14,7 @@ public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(1001, "Lỗi hệ thống không xác định", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_KEY(1002, "Mã lỗi không hợp lệ", HttpStatus.INTERNAL_SERVER_ERROR),
     UNAUTHORIZED(1016, "Bạn không có quyền truy cập", HttpStatus.FORBIDDEN),
+    UNAUTHENTICATED(1017, "Chưa xác thực danh tính", HttpStatus.UNAUTHORIZED),
     USERNAME_REQUIRED(1002, "Tên đăng nhập không được để trống", HttpStatus.BAD_REQUEST),
     PASSWORD_REQUIRED(1003, "Mật khẩu không được để trống", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(1004, "Mật khẩu phải nằm trong khoảng {min} đến {max} kí tự", HttpStatus.BAD_REQUEST),
@@ -80,6 +81,7 @@ public enum ErrorCode {
     SECTION_NOT_FOUND(4006, "Không tìm thấy thông tin lớp học phần", HttpStatus.NOT_FOUND),
     STUDENT_NOT_FOUND(4007, "Không tìm thấy thông tin hồ sơ sinh viên", HttpStatus.NOT_FOUND),
     LECTURER_NOT_FOUND(4008, "Không tìm thấy thông tin hồ sơ giảng viên", HttpStatus.NOT_FOUND),
+    USER_NOT_FOUND(4009, "Không tìm thấy thông tin hồ sơ người dùng", HttpStatus.NOT_FOUND),
 
     // --- Series 4010: Lỗi TRÙNG LẶP DỮ LIỆU (EXISTED / CONFLICT) ---
     PROGRAM_EXISTED(4011, "Mã chương trình đào tạo đã tồn tại trong hệ thống", HttpStatus.BAD_REQUEST),
