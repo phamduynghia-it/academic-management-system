@@ -45,6 +45,7 @@ public enum ErrorCode {
     DEPARTMENT_NAME_REQUIRED(2022, "Tên bộ môn không được để trống", HttpStatus.BAD_REQUEST),
     DEPARTMENT_NAME_INVALID_LENGTH(2023, "Tên bộ môn không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
     HEAD_OF_DEPARTMENT_INVALID_LENGTH(2024, "Mã trưởng bộ môn không vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
+    DEPARTMENT_EXISTED(2025, "Mã bộ môn đã tồn tại", HttpStatus.BAD_REQUEST),
 
 
     CLASS_ID_REQUIRED(2030, "Mã lớp không được để trống", HttpStatus.BAD_REQUEST),
