@@ -8,7 +8,8 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "course_section_student")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -7,7 +7,8 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "department")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

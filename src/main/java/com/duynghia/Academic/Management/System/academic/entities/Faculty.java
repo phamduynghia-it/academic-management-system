@@ -13,7 +13,8 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "faculty")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

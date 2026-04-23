@@ -71,6 +71,7 @@ public enum ErrorCode {
 
     FULLNAME_REQUIRED(1011, "Họ và tên không được để trống", HttpStatus.BAD_REQUEST),
     PROGRAM_REQUIRED(4026, "Chương trình đào tạo không được để trống", HttpStatus.BAD_REQUEST),
+    SEMETER_ID_REQUIRED(4027, "Kỳ học không được để trống", HttpStatus.BAD_REQUEST),
 
 
     CLASS_NOT_FOUND(4001, "Không tìm thấy thông tin lớp học", HttpStatus.NOT_FOUND),
@@ -91,11 +92,15 @@ public enum ErrorCode {
 
     // --- Series 4020: Lỗi LOGIC NGHIỆP VỤ (BUSINESS RULE) ---
     COURSE_ALREADY_IN_PROGRAM(4021, "Học phần này đã được thêm vào chương trình đào tạo từ trước", HttpStatus.BAD_REQUEST),
+    COURSE_NOT_EXISTED_IN_PROGRAM(4029, "Học phần này không tồn tại trong chương trình đào tạo", HttpStatus.BAD_REQUEST),
+    COURSE_ID_REQUIRED(4026, "Mã học phần không được để trống", HttpStatus.BAD_REQUEST),
+    CREDITS_REQUIRED(4027, "Số tín chỉ không được để trống", HttpStatus.BAD_REQUEST),
     STUDENT_ALREADY_IN_SECTION(4022, "Sinh viên đã đăng ký lớp học phần này rồi", HttpStatus.BAD_REQUEST),
     PREREQUISITE_NOT_MET(4023, "Sinh viên chưa tích lũy đủ học phần tiên quyết để đăng ký môn này", HttpStatus.BAD_REQUEST),
     SECTION_IS_FULL(4024, "Lớp học phần đã đạt số lượng đăng ký tối đa", HttpStatus.BAD_REQUEST),
     INVALID_SEMESTER(4025, "Học kỳ đăng ký không hợp lệ", HttpStatus.BAD_REQUEST),
     DEPARTMENT_NOT_FOUND(4002, "Không tìm thấy thông tin bộ môn", HttpStatus.NOT_FOUND);
+
 
     int code;
     String message;

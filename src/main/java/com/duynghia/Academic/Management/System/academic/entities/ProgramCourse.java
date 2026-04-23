@@ -6,7 +6,8 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "program_course")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

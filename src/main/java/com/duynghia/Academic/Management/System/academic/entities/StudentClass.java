@@ -9,7 +9,8 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "class_room")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

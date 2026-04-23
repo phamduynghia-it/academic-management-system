@@ -10,7 +10,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "program")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

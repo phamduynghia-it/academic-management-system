@@ -11,7 +11,8 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "course_section")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
