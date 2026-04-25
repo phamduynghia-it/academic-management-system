@@ -67,11 +67,14 @@ public enum ErrorCode {
     ACADEMIC_TITLE_INVALID_LENGTH(3103, "Học hàm không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
     DEGREE_INVALID_LENGTH(3104, "Học vị không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
     POSITION_INVALID_LENGTH(3105, "Chức danh không được vượt quá {max} ký tự", HttpStatus.BAD_REQUEST),
+    SECTION_ID_INVALID_LENGTH(3106, "Mã lớp học phần không được vượt quá {max} kí tự", HttpStatus.BAD_REQUEST),
 
 
     FULLNAME_REQUIRED(1011, "Họ và tên không được để trống", HttpStatus.BAD_REQUEST),
     PROGRAM_REQUIRED(4026, "Chương trình đào tạo không được để trống", HttpStatus.BAD_REQUEST),
     SEMETER_ID_REQUIRED(4027, "Kỳ học không được để trống", HttpStatus.BAD_REQUEST),
+    SECTION_NAME_REQUIRED(4028, "Tên lớp học phần không được để trống", HttpStatus.BAD_REQUEST),
+    SEMESTER_REQUIRED(4029, "Kỳ học không được bỏ trống", HttpStatus.BAD_REQUEST),
 
 
     CLASS_NOT_FOUND(4001, "Không tìm thấy thông tin lớp học", HttpStatus.NOT_FOUND),
@@ -99,7 +102,8 @@ public enum ErrorCode {
     PREREQUISITE_NOT_MET(4023, "Sinh viên chưa tích lũy đủ học phần tiên quyết để đăng ký môn này", HttpStatus.BAD_REQUEST),
     SECTION_IS_FULL(4024, "Lớp học phần đã đạt số lượng đăng ký tối đa", HttpStatus.BAD_REQUEST),
     INVALID_SEMESTER(4025, "Học kỳ đăng ký không hợp lệ", HttpStatus.BAD_REQUEST),
-    DEPARTMENT_NOT_FOUND(4002, "Không tìm thấy thông tin bộ môn", HttpStatus.NOT_FOUND);
+    DEPARTMENT_NOT_FOUND(4002, "Không tìm thấy thông tin bộ môn", HttpStatus.NOT_FOUND),
+    MAX_CAPACITY_INVALID(4030, "Số lượng sinh viên tối đa không hợp lệ", HttpStatus.BAD_REQUEST);
 
 
     int code;

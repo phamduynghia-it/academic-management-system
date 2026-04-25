@@ -37,6 +37,10 @@ public class RegistrationPeriod {
     @NotNull(message = "SEMESTER_REQUIRED")
     Integer semester;
 
+    @Column(name = "phase", nullable = false)
+    @NotNull(message = "PHASE_REQUIRED")
+    Integer phase;
+
     @Column(name = "start_time", nullable = false)
     @NotNull(message = "START_TIME_REQUIRED")
     LocalDateTime startTime;
