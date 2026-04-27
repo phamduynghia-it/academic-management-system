@@ -1,7 +1,10 @@
 package com.duynghia.Academic.Management.System.academic.dto.response;
 
+import com.duynghia.Academic.Management.System.academic.enums.CourseSectionStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -30,8 +33,14 @@ public class CourseSectionResponse {
 
     Integer phase;
 
+    LocalDate startDate;
+
+    LocalDate endDate;
+
     Integer maxCapacity;
 
     Integer currentEnrollment;
+
+    CourseSectionStatus status;
 
 }

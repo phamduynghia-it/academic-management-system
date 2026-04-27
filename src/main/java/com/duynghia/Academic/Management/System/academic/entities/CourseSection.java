@@ -1,5 +1,6 @@
 package com.duynghia.Academic.Management.System.academic.entities;
 
+import com.duynghia.Academic.Management.System.academic.enums.CourseSectionStatus;
 import com.duynghia.Academic.Management.System.identity.entities.Lecturer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -8,6 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "course_section")
@@ -53,6 +56,15 @@ public class CourseSection {
     @Min(value = 1, message = "MAX_CAPACITY_INVALID")
     Integer maxCapacity;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20, nullable = false)
+    CourseSectionStatus status;
+
+    @Column(name = "start_date")
+    LocalDate startDate;
+
+    @Column(name = "end_date")
+    LocalDate endDate;
 
     @Column(name = "current_enrollment")
     @Builder.Default

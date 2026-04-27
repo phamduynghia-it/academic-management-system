@@ -75,6 +75,10 @@ public enum ErrorCode {
     SEMETER_ID_REQUIRED(4027, "Kỳ học không được để trống", HttpStatus.BAD_REQUEST),
     SECTION_NAME_REQUIRED(4028, "Tên lớp học phần không được để trống", HttpStatus.BAD_REQUEST),
     SEMESTER_REQUIRED(4029, "Kỳ học không được bỏ trống", HttpStatus.BAD_REQUEST),
+    STATUS_REQUIRED(4030, "Trạng thái của lớp học phần là bắt buộc", HttpStatus.BAD_REQUEST),
+    CANNOT_UPDATE_CANCELLED_SECTION(4031, "Không thể chỉnh sửa lớp học phần đã bị hủy", HttpStatus.BAD_REQUEST),
+    CANNOT_UPDATE_COMPLETED_SECTION(4032, "Không thể thay đổi trạng thái của lớp học phần đã kết thúc", HttpStatus.BAD_REQUEST),
+    INVALID_STATUS_TRANSITION(4033, "Luồng chuyển đổi trạng thái không hợp lệ đối với lớp đang diễn ra", HttpStatus.BAD_REQUEST),
 
 
     CLASS_NOT_FOUND(4001, "Không tìm thấy thông tin lớp học", HttpStatus.NOT_FOUND),

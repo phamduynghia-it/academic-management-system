@@ -1,11 +1,14 @@
 package com.duynghia.Academic.Management.System.academic.dto.request;
 
+import com.duynghia.Academic.Management.System.academic.enums.CourseSectionStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -29,7 +32,16 @@ public class CourseSectionUpdateRequest {
     @NotNull(message = "PHASE_REQUIRED")
     Integer phase;
 
+    @NotNull(message = "PHASE_REQUIRED")
+    LocalDate startDate;
+
+    @NotNull(message = "PHASE_REQUIRED")
+    LocalDate endDate;
+
     @NotNull(message = "MAX_CAPACITY_REQUIRED")
     @Min(value = 1, message = "MAX_CAPACITY_INVALID")
     Integer maxCapacity;
+
+    @NotNull(message = "STATUS_REQUIRED")
+    CourseSectionStatus status;
 }
