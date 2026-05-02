@@ -4,7 +4,9 @@ import com.duynghia.Academic.Management.System.config.jwt.JwtService;
 import com.duynghia.Academic.Management.System.exception.AppException;
 import com.duynghia.Academic.Management.System.exception.ErrorCode;
 import com.duynghia.Academic.Management.System.identity.dto.request.AuthenticationRequest;
+import com.duynghia.Academic.Management.System.identity.dto.request.IntrospectRequest;
 import com.duynghia.Academic.Management.System.identity.dto.response.AuthenticationResponse;
+import com.duynghia.Academic.Management.System.identity.dto.response.IntrospectResponse;
 import com.duynghia.Academic.Management.System.identity.entities.User;
 import com.duynghia.Academic.Management.System.identity.repository.UserRepository;
 import com.duynghia.Academic.Management.System.identity.service.IAuthenService;
@@ -16,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.text.ParseException;
 
 @Service
 @RequiredArgsConstructor
@@ -43,5 +47,19 @@ public class AuthenService implements IAuthenService {
             log.info("can't create token");
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
+        var token = request.getToken();
+        boolean isValid = true;
+
+        try {
+            jwtService.verifyToken(token, false);
+        } catch (AppException e) {
+            isValid = false;
+        }
+
+        return IntrospectResponse.builder().valid(isValid).build();
     }
 }

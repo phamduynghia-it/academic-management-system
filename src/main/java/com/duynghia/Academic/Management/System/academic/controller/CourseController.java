@@ -5,13 +5,12 @@ import com.duynghia.Academic.Management.System.academic.dto.request.CourseUpdate
 import com.duynghia.Academic.Management.System.academic.dto.response.CourseResponse;
 import com.duynghia.Academic.Management.System.academic.service.ICourseService;
 import com.duynghia.Academic.Management.System.common.ApiResponse;
+import com.duynghia.Academic.Management.System.common.PageResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/courses")
@@ -29,9 +28,13 @@ public class CourseController {
     }
 
     @GetMapping
-    public ApiResponse<List<CourseResponse>> getAllCourses() {
-        return ApiResponse.<List<CourseResponse>>builder()
-                .result(courseService.getAllCourses())
+    public ApiResponse<PageResponse<CourseResponse>> getAllCourses(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "departmentId", required = false) String departmentId) {
+        return ApiResponse.<PageResponse<CourseResponse>>builder()
+                .result(courseService.getAllCourses(page, size, keyword, departmentId))
                 .build();
     }
 
@@ -58,4 +61,5 @@ public class CourseController {
                 .result("Đã xóa học phần thành công khỏi hệ thống")
                 .build();
     }
+
 }

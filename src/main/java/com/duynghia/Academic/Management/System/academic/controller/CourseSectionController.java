@@ -50,4 +50,14 @@ public class CourseSectionController {
                 .result(courseSectionService.getAllSections(page, size, keyword, academicYear, semester, phase, status))
                 .build();
     }
+
+    @GetMapping("/available")
+    public ApiResponse<PageResponse<CourseSectionResponse>> getAvailableSections(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<CourseSectionResponse>>builder()
+                .result(courseSectionService.getAvailableSections(page, size))
+                .build();
+    }
 }

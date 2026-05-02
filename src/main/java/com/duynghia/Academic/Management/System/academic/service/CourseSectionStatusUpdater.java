@@ -18,7 +18,8 @@ public class CourseSectionStatusUpdater {
 
     CourseSectionRepository repository;
 
-    @Scheduled(cron = "0/10 * * * * *")
+    //    @Scheduled(cron = "0/10 * * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void updateCourseSectionStatuses() {
         LocalDate today = LocalDate.now();

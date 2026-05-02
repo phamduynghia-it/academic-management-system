@@ -10,11 +10,16 @@ import com.duynghia.Academic.Management.System.academic.mapper.CourseMapper;
 import com.duynghia.Academic.Management.System.academic.repository.CourseRepository;
 import com.duynghia.Academic.Management.System.academic.repository.DepartmentRepository;
 import com.duynghia.Academic.Management.System.academic.service.ICourseService;
+import com.duynghia.Academic.Management.System.common.PageResponse;
 import com.duynghia.Academic.Management.System.exception.AppException;
 import com.duynghia.Academic.Management.System.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,11 +49,22 @@ public class CourseService implements ICourseService {
     }
 
     @Override
-    public List<CourseResponse> getAllCourses() {
-        return courseRepository.findAll()
-                .stream()
-                .map(courseMapper::toCourseResponse)
-                .toList();
+    public PageResponse<CourseResponse> getAllCourses(int page, int size, String keyword, String departmentId) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "courseName");
+
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        Page<Course> coursePage = courseRepository.seacrhAndFilterCourse(keyword, departmentId, pageable);
+
+        List<CourseResponse> courseResponseList = coursePage.getContent().stream()
+                .map(courseMapper::toCourseResponse).toList();
+        return PageResponse.<CourseResponse>builder()
+                .currentPage(page)
+                .pageSize(coursePage.getSize())
+                .data(courseResponseList)
+                .totalPages(coursePage.getTotalPages())
+                .totalElements(coursePage.getTotalElements())
+                .build();
     }
 
     @Override

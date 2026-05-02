@@ -49,7 +49,10 @@ public class RegistrationPeriod {
     @NotNull(message = "END_TIME_REQUIRED")
     LocalDateTime endTime;
 
+    @Column(name = "target_cohort", length = 50)
+    String targetCohort;
+
     @Column(name = "is_active", nullable = false)
     @NotNull(message = "IS_ACTIVE_REQUIRED")
-    Boolean isActive;
+    Boolean isActive = true;
 }

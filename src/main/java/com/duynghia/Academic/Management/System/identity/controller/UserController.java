@@ -2,6 +2,7 @@ package com.duynghia.Academic.Management.System.identity.controller;
 
 import com.duynghia.Academic.Management.System.common.ApiResponse;
 import com.duynghia.Academic.Management.System.identity.dto.request.UserCreationRequest;
+import com.duynghia.Academic.Management.System.identity.dto.request.UserUpdateRequest;
 import com.duynghia.Academic.Management.System.identity.dto.response.UserResponse;
 import com.duynghia.Academic.Management.System.identity.service.IUserService;
 import jakarta.validation.Valid;
@@ -30,6 +31,13 @@ public class UserController {
     public ApiResponse<List<UserResponse>> getAllUser() {
         return ApiResponse.<List<UserResponse>>builder()
                 .result(userService.getAllUser())
+                .build();
+    }
+
+    @PutMapping("/{userId}")
+    public ApiResponse<UserResponse> updateUser(@PathVariable("userId") String userId, @RequestBody @Valid UserUpdateRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateUser(userId, request))
                 .build();
     }
 }

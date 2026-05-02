@@ -1,5 +1,6 @@
 package com.duynghia.Academic.Management.System.academic.entities;
 
+import com.duynghia.Academic.Management.System.academic.enums.EnrollmentStatus;
 import com.duynghia.Academic.Management.System.identity.entities.Student;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -49,4 +50,7 @@ public class CourseSectionStudent {
 
     @Column(name = "attempt")
     Integer attempt;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    EnrollmentStatus status;
 }

@@ -13,4 +13,5 @@ public interface ICourseSectionService {
 
     public PageResponse<CourseSectionResponse> getAllSections(int page, int size, String keyword,
                                                               String academicYear, Integer semester, Integer phase, CourseSectionStatus status);
+    public PageResponse<CourseSectionResponse> getAvailableSections(int page, int size);
 }

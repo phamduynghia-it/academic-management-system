@@ -9,12 +9,15 @@ import com.duynghia.Academic.Management.System.academic.enums.CourseSectionStatu
 import com.duynghia.Academic.Management.System.academic.mapper.CourseSectionMapper;
 import com.duynghia.Academic.Management.System.academic.repository.CourseRepository;
 import com.duynghia.Academic.Management.System.academic.repository.CourseSectionRepository;
+import com.duynghia.Academic.Management.System.academic.repository.RegistrationPeriodRepository;
 import com.duynghia.Academic.Management.System.academic.service.ICourseSectionService;
 import com.duynghia.Academic.Management.System.common.PageResponse;
 import com.duynghia.Academic.Management.System.exception.AppException;
 import com.duynghia.Academic.Management.System.exception.ErrorCode;
 import com.duynghia.Academic.Management.System.identity.entities.Lecturer;
+import com.duynghia.Academic.Management.System.identity.entities.Student;
 import com.duynghia.Academic.Management.System.identity.repository.LecturerRepository;
+import com.duynghia.Academic.Management.System.identity.repository.StudentRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +26,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +41,8 @@ public class CourseSectionService implements ICourseSectionService {
     CourseSectionMapper courseSectionMapper;
     LecturerRepository lecturerRepository;
     CourseRepository courseRepository;
+    StudentRepository studentRepository; // Để lấy thông tin sinh viên
+    RegistrationPeriodRepository registrationPeriodRepository;
 
     @Transactional
     @Override
@@ -117,5 +125,45 @@ public class CourseSectionService implements ICourseSectionService {
                 .data(dtoList)
                 .build();
     }
+@Override
+    public PageResponse<CourseSectionResponse> getAvailableSections(int page, int size) {
+        String currentStudentId = SecurityContextHolder.getContext().getAuthentication().getName();
+        Student student = studentRepository.findById(currentStudentId)
+                .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
 
+        LocalDateTime now = LocalDateTime.now();
+        String cohort = student.getCohort();
+        String programId = student.getProgramId();
+
+
+        boolean hasActivePeriod = registrationPeriodRepository.existsActivePeriodForStudent(cohort, now);
+        if (!hasActivePeriod) {
+            throw new AppException(ErrorCode.NO_ACTIVE_REGISTRATION_PERIOD);
+        }
+        Sort sort = Sort.by(Sort.Direction.DESC, "sectionId");
+
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        Page<CourseSection> pagedSections = courseSectionRepository.findAvailableSectionsForStudent(
+                programId,
+                currentStudentId,
+                cohort,
+                now,
+                pageable
+        );
+
+
+        List<CourseSectionResponse> dtoList = pagedSections.getContent().stream()
+                .map(courseSectionMapper::toCourseSectionResponse)
+                .collect(Collectors.toList());
+
+        return PageResponse.<CourseSectionResponse>builder()
+
+                .currentPage(page)
+                .totalPages(pagedSections.getTotalPages())
+                .totalElements(pagedSections.getTotalElements())
+                .pageSize(size)
+                .data(dtoList)
+                .build();
+    }
 }
