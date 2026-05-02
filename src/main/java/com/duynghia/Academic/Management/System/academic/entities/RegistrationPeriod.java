@@ -52,7 +52,7 @@ public class RegistrationPeriod {
     @Column(name = "target_cohort", length = 50)
     String targetCohort;
 
+    @Builder.Default
     @Column(name = "is_active", nullable = false)
-    @NotNull(message = "IS_ACTIVE_REQUIRED")
     Boolean isActive = true;
 }

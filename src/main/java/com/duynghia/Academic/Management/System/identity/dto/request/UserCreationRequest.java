@@ -36,6 +36,8 @@ public class UserCreationRequest {
 
     String programId;
 
+    String cohort;
+
     String departmentId;
 
 }

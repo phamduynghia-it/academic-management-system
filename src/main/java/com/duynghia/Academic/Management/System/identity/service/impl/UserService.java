@@ -86,6 +86,7 @@ public class UserService implements IUserService {
                     .studentId(request.getUsername())
                     .programId(program.getProgramId())
                     .user(user)
+                    .Cohort(request.getCohort())
                     .studentClass(studentClass)
                     .build();
             studentRepository.save(student);
