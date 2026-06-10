@@ -1,15 +1,17 @@
 package com.duynghia.Academic.Management.System.identity.entities;
 
+import com.duynghia.Academic.Management.System.academic.entities.Program;
 import com.duynghia.Academic.Management.System.academic.entities.StudentClass;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "student")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,24 +20,36 @@ public class Student {
 
     @Id
     @Column(name = "student_id", length = 10)
-    @NotBlank(message = "STUDENT_ID_REQUIRED")
-    @Size(max = 10, message = "STUDENT_ID_INVALID_LENGTH")
-    String studentId;
+    String studentId; // MaSinhVien
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     User user;
 
-    @Column(name = "program_id", length = 25)
-    @Size(max = 25, message = "PROGRAM_ID_INVALID_LENGTH")
-    String programId;
+    @Column(name = "last_name", nullable = false, length = 35)
+    String lastName; // HoDem
 
-    @Column(name = "cohort", length = 10)
-    String Cohort;
-    
+    @Column(name = "first_name", nullable = false, length = 35)
+    String firstName; // Ten
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "program_id")
+    Program program; // MaCTDT
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
-    StudentClass studentClass;
+    StudentClass studentClass; // MaLop
 
+    @Column(name = "date_of_birth")
+    LocalDate dateOfBirth; // NgaySinh
+
+    @Column(name = "address", length = 250)
+    String address; // DiaChi
+
+    @Column(name = "phone_number", length = 15)
+    String phoneNumber; // DienThoai
+
+    @Column(name = "cohort", length = 15)
+    String cohort; //
 
 }

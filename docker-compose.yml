@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # 1. Dịch vụ Cơ sở dữ liệu MySQL 9.3.0
+  db:
+    image: mysql:9.3.0
+    container_name: academic_db
+    restart: always
+    environment:
+      # Tự động tạo cơ sở dữ liệu khi container khởi chạy lần đầu
+      MYSQL_DATABASE: academic_management_system
+      # Thiết lập mật khẩu cho tài khoản root mặc định
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      # Ánh xạ dữ liệu ra volume để không bị mất data khi stop/xóa container
+      - db_data:/var/lib/mysql
+    networks:
+      - app_network
+
+  # 2. Dịch vụ Spring Boot Backend (Java 21 + Maven)
+  api:
+    build:
+      context: . # Trỏ đến thư mục hiện tại chứa Dockerfile (Multi-stage build)
+    container_name: academic_backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      # "Bơm" biến môi trường để đè lên cấu hình mặc định trong application.yml
+      # Chú ý: localhost được thay thế bằng tên service "db" để kết nối nội bộ Docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/academic_management_system?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      # Nếu sau này bạn cần đổi Secret Key của JWT mà không muốn sửa code, hãy bỏ comment dòng dưới:
+      # - JWT_SECRET=chuoi_bi_mat_moi_khi_deploy_production
+    depends_on:
+      - db # Yêu cầu MySQL khởi động trước khi chạy Spring Boot
+    networks:
+      - app_network
+
+# Định nghĩa lưu trữ dữ liệu độc lập
+volumes:
+  db_data:
+
+# Định nghĩa mạng nội bộ nối hai container với nhau
+networks:
+  app_network:
+    driver: bridge

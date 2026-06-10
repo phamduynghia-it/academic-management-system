@@ -2,14 +2,15 @@ package com.duynghia.Academic.Management.System.identity.entities;
 
 import com.duynghia.Academic.Management.System.academic.entities.Department;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "lecturer")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,28 +19,38 @@ public class Lecturer {
 
     @Id
     @Column(name = "lecturer_id", length = 10)
-    @NotBlank(message = "LECTURER_ID_REQUIRED")
-    @Size(max = 10, message = "LECTURER_ID_INVALID_LENGTH")
-    String lecturerId;
+    String lecturerId; // MaGiangVien
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+    @JoinColumn(
+            name = "user_id",
+            nullable = false,
+            unique = true
+    )
     User user;
+
+    @Column(name = "last_name", nullable = false, length = 35)
+    String lastName; // HoDem
+
+    @Column(name = "first_name", nullable = false, length = 35)
+    String firstName; // Ten
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
-    Department department;
+    Department department; // MaBoMon
+
+    @Column(name = "date_of_birth")
+    LocalDate dateOfBirth; // NgaySinh
 
     @Column(name = "academic_title", columnDefinition = "nvarchar(20)")
-    @Size(max = 20, message = "ACADEMIC_TITLE_INVALID_LENGTH")
-    String academicTitle;
+    String academicTitle; // HocHam
 
     @Column(name = "degree", columnDefinition = "nvarchar(20)")
-    @Size(max = 20, message = "DEGREE_INVALID_LENGTH")
-    String degree;
+    String degree; // HocVi
 
     @Column(name = "position", columnDefinition = "nvarchar(20)")
-    @Size(max = 20, message = "POSITION_INVALID_LENGTH")
-    String position;
+    String position; // ChucDanh
 
+    @Column(name = "phone_number", length = 15)
+    String phoneNumber; // DienThoai
 }

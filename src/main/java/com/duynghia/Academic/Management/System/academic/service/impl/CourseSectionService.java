@@ -125,7 +125,8 @@ public class CourseSectionService implements ICourseSectionService {
                 .data(dtoList)
                 .build();
     }
-@Override
+
+    @Override
     public PageResponse<CourseSectionResponse> getAvailableSections(int page, int size) {
         String currentStudentId = SecurityContextHolder.getContext().getAuthentication().getName();
         Student student = studentRepository.findById(currentStudentId)
@@ -133,7 +134,7 @@ public class CourseSectionService implements ICourseSectionService {
 
         LocalDateTime now = LocalDateTime.now();
         String cohort = student.getCohort();
-        String programId = student.getProgramId();
+        String programId = student.getProgram().getProgramId();
 
 
         boolean hasActivePeriod = registrationPeriodRepository.existsActivePeriodForStudent(cohort, now);

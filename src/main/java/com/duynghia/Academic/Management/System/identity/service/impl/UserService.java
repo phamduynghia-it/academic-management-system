@@ -56,7 +56,7 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-    public UserResponse createUser(UserCreationRequest request) {
+    public User createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
@@ -68,45 +68,7 @@ public class UserService implements IUserService {
         Role role = roleRepository.findByRoleName(roleName)
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXISTED));
         user.setRole(role);
-        user = userRepository.save(user);
-
-
-        if (user.getRole().getRoleName() == RoleName.STUDENT) {
-            if (request.getClassId() == null || request.getClassId().trim().isEmpty()) {
-                throw new AppException(ErrorCode.CLASS_ID_REQUIRED);
-            }
-            if (request.getProgramId() == null || request.getProgramId().trim().isEmpty()) {
-                throw new AppException(ErrorCode.PROGRAM_REQUIRED);
-            }
-            var program = programRepository.findById(request.getProgramId())
-                    .orElseThrow(() -> new AppException(ErrorCode.PROGRAM_NOT_FOUND));
-            var studentClass = studentClassRepository.findById(request.getClassId())
-                    .orElseThrow(() -> new AppException(ErrorCode.CLASS_NOT_FOUND));
-            Student student = Student.builder()
-                    .studentId(request.getUsername())
-                    .programId(program.getProgramId())
-                    .user(user)
-                    .Cohort(request.getCohort())
-                    .studentClass(studentClass)
-                    .build();
-            studentRepository.save(student);
-
-        } else if (user.getRole().getRoleName() == RoleName.LECTURER) {
-            if (request.getDepartmentId() == null || request.getDepartmentId().trim().isEmpty()) {
-                throw new AppException(ErrorCode.DEPARTMENT_ID_REQUIRED);
-            }
-
-            var department = departmentRepository.findById(request.getDepartmentId())
-                    .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
-
-            Lecturer lecturer = Lecturer.builder()
-                    .lecturerId(request.getUsername())
-                    .user(user)
-                    .department(department)
-                    .build();
-            lecturerRepository.save(lecturer);
-        }
-        return userMapper.toUserResponse(user);
+        return userRepository.save(user);
     }
 
     @Override

@@ -14,10 +14,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserCreationRequest {
 
-
     @NotBlank(message = "USERNAME_REQUIRED")
     @Size(min = 2, max = 50, message = "INVALID_USERNAME")
     String username;
+
     @NotBlank(message = "PASSWORD_REQUIRED")
     @Size(min = 6, max = 255, message = "INVALID_PASSWORD")
     String password;
@@ -28,16 +28,5 @@ public class UserCreationRequest {
 
     @NotBlank(message = "ROLE_REQUIRED")
     String role;
-
-    @NotBlank(message = "FULLNAME_REQUIRED")
-    String fullName;
-
-    String classId;
-
-    String programId;
-
-    String cohort;
-
-    String departmentId;
 
 }
