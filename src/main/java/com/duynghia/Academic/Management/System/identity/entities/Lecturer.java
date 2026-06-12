@@ -53,4 +53,6 @@ public class Lecturer {
 
     @Column(name = "phone_number", length = 15)
     String phoneNumber; // DienThoai
+    @Column(name = "address", columnDefinition = "nvarchar(100)")
+    String address; // DiaChi
 }
