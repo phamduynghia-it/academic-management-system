@@ -21,9 +21,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
+@Validated
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -32,6 +34,7 @@ public class CourseService implements ICourseService {
     CourseRepository courseRepository;
     DepartmentRepository departmentRepository;
     CourseMapper courseMapper;
+    static float EPSILON = 0.001f;
 
     @Override
     public CourseResponse createCourse(CourseCreationRequest request) {
@@ -41,6 +44,17 @@ public class CourseService implements ICourseService {
 
         Department department = departmentRepository.findById(request.getDepartmentId())
                 .orElseThrow(() -> new AppException(ErrorCode.DEPARTMENT_NOT_FOUND));
+
+
+        float total = request.getProcessWeight() + request.getFinalWeight();
+        System.out.println("processWeight = " + request.getProcessWeight());
+        System.out.println("finalWeight = " + request.getFinalWeight());
+        System.out.println("total = " + total);
+        System.out.println("abs = " + Math.abs(total - 1.0f));
+
+        if (Math.abs(total - 1.0f) > EPSILON) {
+            throw new AppException(ErrorCode.INVALID_WEIGHT);
+        }
 
         Course course = courseMapper.toCourse(request);
         course.setDepartment(department);

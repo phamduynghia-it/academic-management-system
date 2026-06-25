@@ -25,7 +25,9 @@ public class CourseSectionResponse {
 
     String lecturerId;
 
-    String lecturerName;
+    String lecturerFirstName;
+
+    String lecturerLastName;
 
     String academicYear;
 

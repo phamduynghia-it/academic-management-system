@@ -7,44 +7,56 @@ services:
     container_name: academic_db
     restart: always
     environment:
-      # Tự động tạo cơ sở dữ liệu khi container khởi chạy lần đầu
       MYSQL_DATABASE: academic_management_system
-      # Thiết lập mật khẩu cho tài khoản root mặc định
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
     volumes:
-      # Ánh xạ dữ liệu ra volume để không bị mất data khi stop/xóa container
       - db_data:/var/lib/mysql
     networks:
       - app_network
 
-  # 2. Dịch vụ Spring Boot Backend (Java 21 + Maven)
+  redis:
+    image: redis:7.2-alpine
+    container_name: academic_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - app_network
+
+  # 3. Dịch vụ Spring Boot Backend (Java 21 + Maven)
   api:
     build:
-      context: . # Trỏ đến thư mục hiện tại chứa Dockerfile (Multi-stage build)
+      context: . # Trỏ đến thư mục hiện tại chứa Dockerfile
     container_name: academic_backend
     restart: always
     ports:
       - "8080:8080"
     environment:
-      # "Bơm" biến môi trường để đè lên cấu hình mặc định trong application.yml
-      # Chú ý: localhost được thay thế bằng tên service "db" để kết nối nội bộ Docker
+      # Cấu hình kết nối MySQL thông qua service "db"
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/academic_management_system?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
-      # Nếu sau này bạn cần đổi Secret Key của JWT mà không muốn sửa code, hãy bỏ comment dòng dưới:
-      # - JWT_SECRET=chuoi_bi_mat_moi_khi_deploy_production
+
+     
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
     depends_on:
-      - db # Yêu cầu MySQL khởi động trước khi chạy Spring Boot
+      - db     # Yêu cầu MySQL khởi động trước
+      - redis  # Yêu cầu Redis khởi động trước luôn mới cho Backend chạy
     networks:
       - app_network
 
-# Định nghĩa lưu trữ dữ liệu độc lập
+# Định nghĩa độc lập khu vực lưu trữ dữ liệu
 volumes:
   db_data:
+  redis_data: # Khai báo volume cho Redis
 
-# Định nghĩa mạng nội bộ nối hai container với nhau
+# Mạng nội bộ kết nối cả 3 container (db, redis, api) với nhau
 networks:
   app_network:
     driver: bridge

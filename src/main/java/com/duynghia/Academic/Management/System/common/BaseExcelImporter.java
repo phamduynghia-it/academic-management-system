@@ -17,7 +17,9 @@ import java.util.List;
 
 @Slf4j
 public abstract class BaseExcelImporter {
-    public final ImportResponse importData(MultipartFile file) {
+    private final DataFormatter formatter = new DataFormatter();
+
+    public final ImportResponse importData(MultipartFile file, Object... args) {
         int success = 0;
         int fail = 0;
         List<String> errors = new ArrayList<>();
@@ -33,7 +35,7 @@ public abstract class BaseExcelImporter {
                 }
 
                 try {
-                    processRow(row);
+                    processRow(row, args);
                     success++;
                 } catch (ConstraintViolationException e) {
                     // 1. Bắt riêng lỗi Validation (Thiếu field, sai sđt, sai ngày sinh...)
@@ -50,7 +52,7 @@ public abstract class BaseExcelImporter {
                     }
 
                     errors.add("Lỗi dòng " + (row.getRowNum() + 1) + ": " + localizedMessage);
-                
+
                 } catch (AppException e) {
                     // 2. Bắt các lỗi nghiệp vụ (Trùng mã SV, Trùng username...)
                     fail++;
@@ -74,20 +76,14 @@ public abstract class BaseExcelImporter {
 
 
     // 1. Logic đọc 1 dòng và lưu vào DB
-    protected abstract void processRow(Row row) throws Exception;
+    protected abstract void processRow(Row row, Object... args) throws Exception;
 
     // 2. Lấy ra mã nhận diện (Ví dụ cột Mã SV hoặc Mã GV) để in ra thông báo lỗi cho đẹp
     protected abstract String getRowIdentifier(Row row);
 
-
     protected String getCellValue(Cell cell) {
         if (cell == null) return "";
-        return switch (cell.getCellType()) {
-            case STRING -> cell.getStringCellValue().trim();
-            case NUMERIC -> String.valueOf((long) cell.getNumericCellValue());
-            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
-            default -> "";
-        };
+        return formatter.formatCellValue(cell).trim();
     }
 
     private boolean isRowEmpty(Row row) {

@@ -51,6 +51,9 @@ public class CourseSectionService implements ICourseSectionService {
 
             throw new AppException(ErrorCode.SECTION_EXISTED);
         }
+        if (request.getEndDate().isBefore(request.getStartDate())) {
+            throw new AppException(ErrorCode.INVALID_DATE_RANGE);
+        }
         CourseSection courseSection = courseSectionMapper.toCourseSection(request);
         if (request.getLecturerId() != null && !request.getLecturerId().trim().isEmpty()) {
             Lecturer lecturer = lecturerRepository.findById(request.getLecturerId())
@@ -102,9 +105,10 @@ public class CourseSectionService implements ICourseSectionService {
 
     @Override
     public PageResponse<CourseSectionResponse> getAllSections(int page, int size, String keyword,
-                                                              String academicYear, Integer semester, Integer phase, CourseSectionStatus status) {
-        // Sắp xếp mặc định theo ID mới nhất chẳng hạn
-        Sort sort = Sort.by(Sort.Direction.DESC, "sectionId");
+                                                              String academicYear, Integer semester, Integer phase, CourseSectionStatus status, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
@@ -127,7 +131,7 @@ public class CourseSectionService implements ICourseSectionService {
     }
 
     @Override
-    public PageResponse<CourseSectionResponse> getAvailableSections(int page, int size) {
+    public PageResponse<CourseSectionResponse> getAvailableSections(int page, int size, String sortBy, String sortDir) {
         String currentStudentId = SecurityContextHolder.getContext().getAuthentication().getName();
         Student student = studentRepository.findById(currentStudentId)
                 .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
@@ -141,7 +145,9 @@ public class CourseSectionService implements ICourseSectionService {
         if (!hasActivePeriod) {
             throw new AppException(ErrorCode.NO_ACTIVE_REGISTRATION_PERIOD);
         }
-        Sort sort = Sort.by(Sort.Direction.DESC, "sectionId");
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 

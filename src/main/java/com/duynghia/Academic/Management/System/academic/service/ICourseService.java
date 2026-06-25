@@ -4,9 +4,10 @@ import com.duynghia.Academic.Management.System.academic.dto.request.CourseCreati
 import com.duynghia.Academic.Management.System.academic.dto.request.CourseUpdateRequest;
 import com.duynghia.Academic.Management.System.academic.dto.response.CourseResponse;
 import com.duynghia.Academic.Management.System.common.PageResponse;
+import jakarta.validation.Valid;
 
 public interface ICourseService {
-    public CourseResponse createCourse(CourseCreationRequest request);
+    public CourseResponse createCourse(@Valid CourseCreationRequest request);
 
     public PageResponse<CourseResponse> getAllCourses(int page, int size, String keyword, String departmentId);
 

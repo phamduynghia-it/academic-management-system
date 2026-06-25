@@ -12,6 +12,7 @@ public interface ICourseSectionService {
     CourseSectionResponse updateCourseSection(String courseSectionId, CourseSectionUpdateRequest request);
 
     public PageResponse<CourseSectionResponse> getAllSections(int page, int size, String keyword,
-                                                              String academicYear, Integer semester, Integer phase, CourseSectionStatus status);
-    public PageResponse<CourseSectionResponse> getAvailableSections(int page, int size);
+                                                              String academicYear, Integer semester, Integer phase, CourseSectionStatus status, String sortBy, String sortDir);
+
+    public PageResponse<CourseSectionResponse> getAvailableSections(int page, int size, String sortBy, String sortDir);
 }

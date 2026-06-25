@@ -4,13 +4,19 @@ import com.duynghia.Academic.Management.System.academic.dto.request.CourseCreati
 import com.duynghia.Academic.Management.System.academic.dto.request.CourseUpdateRequest;
 import com.duynghia.Academic.Management.System.academic.dto.response.CourseResponse;
 import com.duynghia.Academic.Management.System.academic.service.ICourseService;
+import com.duynghia.Academic.Management.System.academic.service.impl.CourseExcelService;
 import com.duynghia.Academic.Management.System.common.ApiResponse;
+import com.duynghia.Academic.Management.System.common.ImportResponse;
 import com.duynghia.Academic.Management.System.common.PageResponse;
+import com.duynghia.Academic.Management.System.exception.AppException;
+import com.duynghia.Academic.Management.System.exception.ErrorCode;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/courses")
@@ -19,6 +25,24 @@ import org.springframework.web.bind.annotation.*;
 public class CourseController {
 
     ICourseService courseService;
+    CourseExcelService courseExcelService;
+
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<ImportResponse> importStudentsFromExcel(
+            @RequestParam("file") MultipartFile file
+    ) {
+        if (file.isEmpty()) {
+            throw new AppException(ErrorCode.FILE_IS_EMPTY);
+        }
+        if (file.getOriginalFilename() == null || !file.getOriginalFilename().endsWith(".xlsx")) {
+            throw new AppException(ErrorCode.FILE_FORMAT_INVALID);
+        }
+        ImportResponse result = courseExcelService.importData(file);
+        return ApiResponse.<ImportResponse>builder()
+                .message("Xử lý file Excel hoàn tất")
+                .result(result)
+                .build();
+    }
 
     @PostMapping
     public ApiResponse<CourseResponse> createCourse(@RequestBody @Valid CourseCreationRequest request) {

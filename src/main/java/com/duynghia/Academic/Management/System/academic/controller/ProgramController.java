@@ -7,12 +7,16 @@ import com.duynghia.Academic.Management.System.academic.dto.response.ProgramCour
 import com.duynghia.Academic.Management.System.academic.dto.response.ProgramResponse;
 import com.duynghia.Academic.Management.System.academic.dto.response.ProgramWithCoursesResponse;
 import com.duynghia.Academic.Management.System.academic.service.IProgramService;
+import com.duynghia.Academic.Management.System.academic.service.impl.ProgramCourseImportService;
 import com.duynghia.Academic.Management.System.common.ApiResponse;
+import com.duynghia.Academic.Management.System.common.ImportResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,6 +27,7 @@ import java.util.List;
 public class ProgramController {
 
     IProgramService programService;
+    ProgramCourseImportService programCourseImportService;
 
     @PostMapping
     public ApiResponse<ProgramResponse> createProgram(@RequestBody @Valid ProgramCreationRequest request) {
@@ -68,6 +73,19 @@ public class ProgramController {
             @RequestBody @Valid ProgramCourseRequest request) {
         return ApiResponse.<ProgramCourseResponse>builder()
                 .result(programService.addCourseToProgram(programId, request))
+                .build();
+    }
+
+    @PostMapping(value = "/{programId}/courses/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<ImportResponse> importCoursesToProgram(
+            @PathVariable String programId,
+            @RequestParam("file") MultipartFile file) {
+
+        ImportResponse result = programCourseImportService.importData(file, programId);
+
+        return ApiResponse.<ImportResponse>builder()
+                .message("Import danh sách học phần thành công")
+                .result(result)
                 .build();
     }
 

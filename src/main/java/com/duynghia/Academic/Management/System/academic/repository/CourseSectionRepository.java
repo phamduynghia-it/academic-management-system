@@ -83,5 +83,4 @@ public interface CourseSectionRepository extends JpaRepository<CourseSection, St
             @Param("currentTime") LocalDateTime currentTime,
             Pageable pageable
     );
-
 }

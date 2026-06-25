@@ -124,6 +124,7 @@ public enum ErrorCode {
     // --- [MỚI THÊM] ---
     COURSE_NAME_REQUIRED(5014, "Tên học phần không được để trống", HttpStatus.BAD_REQUEST),
     INVALID_CREDITS(5015, "Số tín chỉ phải lớn hơn 0", HttpStatus.BAD_REQUEST),
+    INVALID_WEIGHT(5016, "Tổng trọng số phải bằng 1", HttpStatus.BAD_REQUEST),
 
     COURSE_ALREADY_IN_PROGRAM(5020, "Học phần này đã được thêm vào chương trình đào tạo từ trước", HttpStatus.BAD_REQUEST),
     COURSE_NOT_EXISTED_IN_PROGRAM(5021, "Học phần này không tồn tại trong chương trình đào tạo", HttpStatus.BAD_REQUEST),
@@ -135,6 +136,8 @@ public enum ErrorCode {
     SECTION_EXISTED(6002, "Mã lớp học phần đã được mở trong hệ thống", HttpStatus.BAD_REQUEST),
     SECTION_ID_INVALID_LENGTH(6003, "Mã lớp học phần không được vượt quá {max} kí tự", HttpStatus.BAD_REQUEST),
     SECTION_NAME_REQUIRED(6004, "Tên lớp học phần không được để trống", HttpStatus.BAD_REQUEST),
+    SECTION_ID_REQUIRED(6005, "Mã lớp học phần không được để trống", HttpStatus.BAD_REQUEST),
+    INVALID_DATE_RANGE(6006, "Thời gian kết thúc phải sau thời gian bắt đầu", HttpStatus.BAD_REQUEST),
 
     SEMESTER_REQUIRED(6010, "Kỳ học không được bỏ trống", HttpStatus.BAD_REQUEST),
     INVALID_SEMESTER(6011, "Học kỳ đăng ký không hợp lệ", HttpStatus.BAD_REQUEST),

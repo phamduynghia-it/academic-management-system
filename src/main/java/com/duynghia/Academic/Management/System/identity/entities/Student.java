@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Student {
-
+    static final int FIRST_COHORT_YEAR = 1956;
     @Id
     @Column(name = "student_id", length = 10)
     String studentId; // MaSinhVien
@@ -51,5 +51,31 @@ public class Student {
 
     @Column(name = "cohort", length = 15)
     String cohort; //
+    @Column(name = "reserved_semesters", columnDefinition = "int default 0")
+    int reservedSemesters = 0;
 
+    @Transient
+    Integer currentSemester;
+
+    public void calculateAndSetCurrentSemester(int systemYear, int systemTerm) {
+        if (this.cohort == null) {
+            this.currentSemester = 1;
+            return;
+        }
+        try {
+
+            int cohortNumber = Integer.parseInt(this.cohort.replace("K", "").trim());
+
+            int admissionYear = FIRST_COHORT_YEAR + (cohortNumber - 1);
+
+            int calculatedSemester = (systemYear - admissionYear - 1) * 2 + systemTerm;
+
+            calculatedSemester -= this.reservedSemesters;
+
+            this.currentSemester = Math.max(1, calculatedSemester);
+
+        } catch (NumberFormatException e) {
+            this.currentSemester = 1;
+        }
+    }
 }

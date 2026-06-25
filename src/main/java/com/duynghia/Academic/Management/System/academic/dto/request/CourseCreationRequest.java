@@ -29,8 +29,8 @@ public class CourseCreationRequest {
 
     @NotNull(message = "CREDITS_REQUIRED")
     Integer credits;
-
+    @NotNull(message = "PROCESS_WEIGHT_REQUIRED")
     Float processWeight;
-
+    @NotNull(message = "FINAL_WEIGHT_REQUIRED")
     Float finalWeight;
 }

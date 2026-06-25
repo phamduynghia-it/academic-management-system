@@ -23,7 +23,7 @@ public class StudentExcelService extends BaseExcelImporter {
 
 
     @Override
-    protected void processRow(Row row) throws Exception {
+    protected void processRow(Row row, Object... args) throws Exception {
         // 1. Chỉ việc dùng hàm getCellValue được kế thừa từ lớp cha
         String username = getCellValue(row.getCell(0));
         String password = getCellValue(row.getCell(1));

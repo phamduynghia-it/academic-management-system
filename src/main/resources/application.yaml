@@ -14,6 +14,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+  cache: redis
 app:
   jwt:
     secret-key: ${JWT_SECRET:kPcfbGt6N9apSH6HIvYXj03suDZd5HTYdIlvmayfsOWr0VgnTlrb0ZLNRvleU4cl}

@@ -20,7 +20,7 @@ public class LecturerExcelService extends BaseExcelImporter {
     ILectureService lectureService;
 
     @Override
-    protected void processRow(Row row) throws Exception {
+    protected void processRow(Row row, Object... args) throws Exception {
         String username = getCellValue(row.getCell(0));
         String password = getCellValue(row.getCell(1));
         String email = getCellValue(row.getCell(2));

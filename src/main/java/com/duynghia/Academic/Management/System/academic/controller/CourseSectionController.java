@@ -6,6 +6,7 @@ import com.duynghia.Academic.Management.System.academic.dto.response.CourseSecti
 import com.duynghia.Academic.Management.System.academic.enums.CourseSectionStatus;
 import com.duynghia.Academic.Management.System.academic.service.ICourseSectionService;
 import com.duynghia.Academic.Management.System.common.ApiResponse;
+import com.duynghia.Academic.Management.System.common.AppConstants;
 import com.duynghia.Academic.Management.System.common.PageResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -38,8 +39,10 @@ public class CourseSectionController {
 
     @GetMapping
     public ApiResponse<PageResponse<CourseSectionResponse>> getAllSections(
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+            @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_SECTIONS_BY) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION) String sortDir,
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "status", required = false) CourseSectionStatus status,
             @RequestParam(value = "academicYear", required = false) String academicYear,
@@ -47,17 +50,19 @@ public class CourseSectionController {
             @RequestParam(value = "phase", required = false) Integer phase) {
 
         return ApiResponse.<PageResponse<CourseSectionResponse>>builder()
-                .result(courseSectionService.getAllSections(page, size, keyword, academicYear, semester, phase, status))
+                .result(courseSectionService.getAllSections(page, size, keyword, academicYear, semester, phase, status, sortBy, sortDir))
                 .build();
     }
 
     @GetMapping("/available")
     public ApiResponse<PageResponse<CourseSectionResponse>> getAvailableSections(
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+            @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_AVAILABLE_SECTIONS_BY) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION) String sortDir
     ) {
         return ApiResponse.<PageResponse<CourseSectionResponse>>builder()
-                .result(courseSectionService.getAvailableSections(page, size))
+                .result(courseSectionService.getAvailableSections(page, size, sortBy, sortDir))
                 .build();
     }
 }

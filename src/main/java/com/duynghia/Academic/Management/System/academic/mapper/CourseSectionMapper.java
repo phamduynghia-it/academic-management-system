@@ -18,7 +18,8 @@ public interface CourseSectionMapper {
     @Mapping(source = "course.courseName", target = "courseName")
     @Mapping(source = "course.credits", target = "credits")
     @Mapping(source = "lecturer.lecturerId", target = "lecturerId")
-        //@Mapping(source = "lecturer.user.fullName", target = "lecturerName")
+    @Mapping(source = "lecturer.firstName", target = "lecturerFirstName")
+    @Mapping(source = "lecturer.lastName", target = "lecturerLastName")
     CourseSectionResponse toCourseSectionResponse(CourseSection courseSection);
 
     void updateCourseSection(@MappingTarget CourseSection courseSection, CourseSectionUpdateRequest request);
