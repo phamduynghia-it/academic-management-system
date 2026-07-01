@@ -8,7 +8,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Entity
-@Table(name = "course_section_student")
+@Table(name = "course_section_student", indexes = {
+        @Index(name = "idx_student_status", columnList = "student_id, status")
+})
 @Getter
 @Setter
 @Builder

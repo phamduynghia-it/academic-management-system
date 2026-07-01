@@ -1,6 +1,7 @@
 package com.duynghia.Academic.Management.System.academic.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -48,7 +49,7 @@ public class Course {
 
     @Column(name = "final_weight")
     Float finalWeight;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ProgramCourse> programCourses;
 }

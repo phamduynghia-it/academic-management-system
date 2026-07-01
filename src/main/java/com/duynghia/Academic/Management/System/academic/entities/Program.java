@@ -1,5 +1,6 @@
 package com.duynghia.Academic.Management.System.academic.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -44,7 +45,7 @@ public class Program {
     @Column(name = "applicable_cohort", length = 10) // KhoaHocApDung (VD: K64, K65)
     @Size(max = 10, message = "COHORT_INVALID_LENGTH")
     String applicableCohort;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<ProgramCourse> programCourses;
 }

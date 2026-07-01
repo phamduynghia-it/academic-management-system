@@ -8,10 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Repository
 public interface CourseSectionRepository extends JpaRepository<CourseSection, String> {
     @Query("""
             SELECT cs FROM CourseSection cs
@@ -52,35 +55,24 @@ public interface CourseSectionRepository extends JpaRepository<CourseSection, St
 
     @Query("""
                 SELECT DISTINCT cs FROM CourseSection cs
-                JOIN ProgramCourse pc ON pc.course.courseId = cs.course.courseId
-                
+                JOIN FETCH ProgramCourse pc ON pc.course.courseId = cs.course.courseId
                 WHERE pc.program.programId = :programId
+                
                 AND (cs.status = 'PLANNED' OR cs.status = 'ONGOING')
                 
-                        
                 AND EXISTS (
                     SELECT 1 FROM RegistrationPeriod rp 
                     WHERE rp.isActive = true 
                     AND :currentTime BETWEEN rp.startTime AND rp.endTime
                     AND (rp.targetCohort IS NULL OR rp.targetCohort = :cohort)
-                    
                     AND rp.semester = cs.semester 
                     AND rp.academicYear = cs.academicYear 
                     AND rp.phase = cs.phase
                 )
-                
-                AND NOT EXISTS (
-                    SELECT 1 FROM CourseSectionStudent css 
-                    WHERE css.student.studentId = :studentId 
-                    AND css.courseSection.course.courseId = cs.course.courseId
-                    AND css.status IN ('PASSED', 'REGISTERED')
-                )
             """)
-    Page<CourseSection> findAvailableSectionsForStudent(
+    List<CourseSection> findBaseSectionsForCohort(
             @Param("programId") String programId,
-            @Param("studentId") String studentId,
             @Param("cohort") String cohort,
-            @Param("currentTime") LocalDateTime currentTime,
-            Pageable pageable
+            @Param("currentTime") LocalDateTime currentTime
     );
 }

@@ -1,7 +1,9 @@
 package com.duynghia.Academic.Management.System.config;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +28,8 @@ public class RedisConfig {
     private ObjectMapper customObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         // Giúp Redis nhớ được tên Class của Object để lúc lấy ra tự ép kiểu lại được
         objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
         return objectMapper;
@@ -56,7 +60,7 @@ public class RedisConfig {
                         RedisCacheWriter.nonLockingRedisCacheWriter(connectionFactory, BatchStrategies.scan(1000)))
                 .cacheDefaults(defaultConfig)
                 // Ví dụ: Môn học thì cả kỳ mới đổi 1 lần -> Cho sống 30 ngày luôn
-                .withCacheConfiguration("courses", defaultConfig.entryTtl(Duration.ofDays(30)))
+                .withCacheConfiguration("program_details", defaultConfig.entryTtl(Duration.ofDays(30)))
                 .build();
     }
 }

@@ -5,6 +5,7 @@ import com.duynghia.Academic.Management.System.academic.dto.request.CourseSectio
 import com.duynghia.Academic.Management.System.academic.dto.response.CourseSectionResponse;
 import com.duynghia.Academic.Management.System.academic.entities.Course;
 import com.duynghia.Academic.Management.System.academic.entities.CourseSection;
+import com.duynghia.Academic.Management.System.academic.entities.RegistrationPeriod;
 import com.duynghia.Academic.Management.System.academic.enums.CourseSectionStatus;
 import com.duynghia.Academic.Management.System.academic.mapper.CourseSectionMapper;
 import com.duynghia.Academic.Management.System.academic.repository.CourseRepository;
@@ -22,15 +23,13 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,8 +40,12 @@ public class CourseSectionService implements ICourseSectionService {
     CourseSectionMapper courseSectionMapper;
     LecturerRepository lecturerRepository;
     CourseRepository courseRepository;
-    StudentRepository studentRepository; // Để lấy thông tin sinh viên
+    StudentRepository studentRepository;
     RegistrationPeriodRepository registrationPeriodRepository;
+    StudentCourseCacheService studentCourseCacheService;
+    CourseSectionQueryService courseSectionQueryService;
+    CourseConditionCacheService courseConditionCacheService;
+    ProgramCourseCacheService programCourseCacheService;
 
     @Transactional
     @Override
@@ -131,46 +134,96 @@ public class CourseSectionService implements ICourseSectionService {
     }
 
     @Override
-    public PageResponse<CourseSectionResponse> getAvailableSections(int page, int size, String sortBy, String sortDir) {
+    public PageResponse<CourseSectionResponse> getAvailableSections(int page, int size, String sortBy, String
+            sortDir) {
         String currentStudentId = SecurityContextHolder.getContext().getAuthentication().getName();
         Student student = studentRepository.findById(currentStudentId)
                 .orElseThrow(() -> new AppException(ErrorCode.STUDENT_NOT_FOUND));
 
-        LocalDateTime now = LocalDateTime.now();
         String cohort = student.getCohort();
         String programId = student.getProgram().getProgramId();
+        LocalDateTime now = LocalDateTime.now();
 
+        RegistrationPeriod activePeriod = registrationPeriodRepository.findActivePeriodForStudent(cohort, now)
+                .orElseThrow(() -> new AppException(ErrorCode.NO_ACTIVE_REGISTRATION_PERIOD));
 
-        boolean hasActivePeriod = registrationPeriodRepository.existsActivePeriodForStudent(cohort, now);
-        if (!hasActivePeriod) {
-            throw new AppException(ErrorCode.NO_ACTIVE_REGISTRATION_PERIOD);
-        }
+        int systemYear = Integer.parseInt(activePeriod.getAcademicYear().substring(0, 4));
+        int systemTerm = activePeriod.getSemester();
+
+        student.calculateAndSetCurrentSemester(systemYear, systemTerm);
+        int studentCurrentSemester = student.getCurrentSemester();
+
+        // 2. Tạo Pageable từ Request
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
-
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
-        Page<CourseSection> pagedSections = courseSectionRepository.findAvailableSectionsForStudent(
-                programId,
-                currentStudentId,
-                cohort,
-                now,
-                pageable
-        );
+        // 3. Lấy dữ liệu từ Cache (O(1) Siêu nhanh)
+        // CourseSectionQueryService.CourseSectionListWrapper wrapper =
+        List<CourseSectionResponse> allBaseSections = courseSectionQueryService.getCachedBaseSections(programId, cohort);
+        List<String> ignoredCourseIds = studentCourseCacheService.getPassedOrRegisteredCourseIds(currentStudentId);
+        List<String> passedCourseIds = studentCourseCacheService.getPassedCourseIds(currentStudentId);
+        Map<String, List<String>> prerequisitesMap = courseConditionCacheService.getCachedPrerequisitesMap();
+        Map<String, Integer> programSemesterMap = programCourseCacheService.getCachedProgramSemesterMap(programId);
 
+        // 4. Lọc danh sách trên RAM
+        List<CourseSectionResponse> eligibleSections = allBaseSections.stream()
+                .filter(section -> {
+                    String courseId = section.getCourseId();
 
-        List<CourseSectionResponse> dtoList = pagedSections.getContent().stream()
-                .map(courseSectionMapper::toCourseSectionResponse)
+                    // ĐIỀU KIỆN 1: Bỏ qua nếu đã học (PASSED) hoặc đang đăng ký (REGISTERED)
+                    if (ignoredCourseIds.contains(courseId)) {
+                        return false;
+                    }
+
+                    // ĐIỀU KIỆN 2: Kì học của môn (theo CTĐT) <= Kì hiện tại của sinh viên
+                    Integer courseSemesterInProgram = programSemesterMap.get(courseId);
+                    if (courseSemesterInProgram != null && courseSemesterInProgram > studentCurrentSemester) {
+                        return false;
+                    }
+
+                    // ĐIỀU KIỆN 3: Phải PASS tất cả các môn tiên quyết
+                    List<String> requiredCourses = prerequisitesMap.get(courseId);
+                    if (requiredCourses != null && !requiredCourses.isEmpty()) {
+                        for (String reqCourseId : requiredCourses) {
+                            if (!passedCourseIds.contains(reqCourseId)) {
+                                return false;
+                            }
+                        }
+                    }
+
+                    return true;
+                })
                 .collect(Collectors.toList());
 
-        return PageResponse.<CourseSectionResponse>builder()
+        // 5. Sắp xếp in-memory
+        eligibleSections.sort((s1, s2) -> {
+            int compareResult = s1.getSectionName().compareToIgnoreCase(s2.getSectionName());
+            return sortDir.equalsIgnoreCase("asc") ? compareResult : -compareResult;
+        });
 
+        // 6. Phân trang bằng PageImpl của Spring
+        int start = (int) pageable.getOffset();
+        List<CourseSectionResponse> pageContent;
+
+        if (start >= eligibleSections.size()) {
+            pageContent = List.of();
+        } else {
+            int end = Math.min((start + pageable.getPageSize()), eligibleSections.size());
+            pageContent = eligibleSections.subList(start, end);
+        }
+
+        Page<CourseSectionResponse> pagedSections = new PageImpl<>(pageContent, pageable, eligibleSections.size());
+
+        // 8. Trả về kết quả
+        return PageResponse.<CourseSectionResponse>builder()
                 .currentPage(page)
                 .totalPages(pagedSections.getTotalPages())
                 .totalElements(pagedSections.getTotalElements())
                 .pageSize(size)
-                .data(dtoList)
+                .data(pagedSections.getContent())
                 .build();
     }
 }
+
