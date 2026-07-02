@@ -152,14 +152,17 @@ public enum ErrorCode {
 
     MAX_CAPACITY_INVALID(6030, "Số lượng sinh viên tối đa không hợp lệ", HttpStatus.BAD_REQUEST),
     SECTION_IS_FULL(6031, "Lớp học phần đã đạt số lượng đăng ký tối đa", HttpStatus.BAD_REQUEST),
-    STUDENT_ALREADY_IN_SECTION(6032, "Sinh viên đã đăng ký lớp học phần này rồi", HttpStatus.BAD_REQUEST),
+    STUDENT_ALREADY_IN_SECTION(6032, "Học phần đã được đăng kí trước đó", HttpStatus.BAD_REQUEST),
     PREREQUISITE_NOT_MET(6033, "Sinh viên chưa tích lũy đủ học phần tiên quyết để đăng ký môn này", HttpStatus.BAD_REQUEST),
     NO_ACTIVE_REGISTRATION_PERIOD(6034, "Hiện tại không có đợt đăng ký tín chỉ nào dành cho bạn", HttpStatus.BAD_REQUEST),
     // --- [MỚI THÊM] Bổ sung logic Trùng lịch và Hủy môn ---
     TIMETABLE_CONFLICT(6035, "Thời khóa biểu bị trùng lịch với một môn học khác đã đăng ký", HttpStatus.BAD_REQUEST),
     LECTURER_TIMETABLE_CONFLICT(6036, "Giảng viên bị trùng lịch giảng dạy với lớp học phần khác", HttpStatus.BAD_REQUEST),
     STUDENT_NOT_IN_SECTION(6037, "Sinh viên không có trong danh sách của lớp học phần này", HttpStatus.BAD_REQUEST),
-
+    MAX_CREDITS_EXCEEDED(6038, "Số tín chỉ đăng ký vượt quá giới hạn tối đa cho phép", HttpStatus.BAD_REQUEST),
+    MIN_CREDITS_NOT_MET(6039, "Số tín chỉ đăng ký chưa đạt mức tối thiểu yêu cầu", HttpStatus.BAD_REQUEST),
+    ALREADY_REGISTERED(6043, "Sinh viên đã đăng ký lớp học phần này", HttpStatus.BAD_REQUEST),
+    CREDIT_RECORD_NOT_FOUND(6044, "Không tìm thấy hồ sơ tín chỉ của sinh viên", HttpStatus.NOT_FOUND),
     // --- [MỚI THÊM] Đợt Đăng Ký (Registration Period) ---
     REGISTRATION_PERIOD_NOT_FOUND(6040, "Không tìm thấy thông tin đợt đăng ký", HttpStatus.NOT_FOUND),
     REGISTRATION_PERIOD_INVALID_TIME(6041, "Thời gian kết thúc đợt đăng ký phải sau thời gian bắt đầu", HttpStatus.BAD_REQUEST),

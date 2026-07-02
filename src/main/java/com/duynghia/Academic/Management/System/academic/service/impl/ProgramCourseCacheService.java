@@ -21,7 +21,6 @@ public class ProgramCourseCacheService {
     // Trả về Map<Mã Môn Học, Kì Học> (Ví dụ: "SE201" -> Kì 2, "SE202" -> Kì 4)
     @Cacheable(value = "program_semesters", key = "#programId")
     public Map<String, Integer> getCachedProgramSemesterMap(String programId) {
-        // Chú ý: Đảm bảo ProgramCourseRepository có hàm findByProgram_ProgramId
         List<ProgramCourse> programCourses = programCourseRepository.findByProgram_ProgramId(programId);
 
         return programCourses.stream().collect(Collectors.toMap(

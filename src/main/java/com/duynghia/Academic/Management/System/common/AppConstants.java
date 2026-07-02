@@ -6,4 +6,8 @@ public class AppConstants {
     public static final String DEFAULT_SORT_SECTIONS_BY = "academicYear";
     public static final String DEFAULT_SORT_DIRECTION = "desc";
     public static final String DEFAULT_SORT_AVAILABLE_SECTIONS_BY = "sectionName";
-}
+
+    public static final int MIN_CREDITS_PER_SEMESTER = 14;
+    public static final int MAX_CREDITS_PER_SEMESTER = 15;
+    public static final long CREDIT_PRICE = 450_000;
+}           
