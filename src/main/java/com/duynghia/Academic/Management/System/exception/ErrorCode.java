@@ -166,7 +166,8 @@ public enum ErrorCode {
     // --- [MỚI THÊM] Đợt Đăng Ký (Registration Period) ---
     REGISTRATION_PERIOD_NOT_FOUND(6040, "Không tìm thấy thông tin đợt đăng ký", HttpStatus.NOT_FOUND),
     REGISTRATION_PERIOD_INVALID_TIME(6041, "Thời gian kết thúc đợt đăng ký phải sau thời gian bắt đầu", HttpStatus.BAD_REQUEST),
-    REGISTRATION_PERIOD_CONFLICT(6042, "Thời gian bị trùng lặp với một đợt đăng ký khác của cùng đối tượng", HttpStatus.BAD_REQUEST);
+    REGISTRATION_PERIOD_CONFLICT(6042, "Thời gian bị trùng lặp với một đợt đăng ký khác của cùng đối tượng", HttpStatus.BAD_REQUEST),
+    REGISTRATION_CONFLICT(6045, "Hệ thống đang xử lý nhiều giao dịch, vui lòng thử lại sau.", HttpStatus.CONFLICT);
 
     int code;
     String message;

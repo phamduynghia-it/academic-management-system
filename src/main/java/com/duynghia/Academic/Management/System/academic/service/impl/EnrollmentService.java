@@ -23,6 +23,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -39,6 +43,7 @@ public class EnrollmentService implements IEnrollmentService {
 
     @Override
     @Transactional
+    @Retryable(value = ObjectOptimisticLockingFailureException.class, maxAttempts = 5, backoff = @Backoff(delay = 50))
     public void registerCourseSection(String sectionId) {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
         Student student = studentRepository.findById(studentId)
@@ -51,6 +56,10 @@ public class EnrollmentService implements IEnrollmentService {
 
         if (enrollmentRepository.existsById(id)) {
             throw new AppException(ErrorCode.ALREADY_REGISTERED);
+        }
+
+        if (section.getCurrentEnrollment() >= section.getMaxCapacity()) {
+            throw new AppException(ErrorCode.SECTION_IS_FULL);
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -116,6 +125,9 @@ public class EnrollmentService implements IEnrollmentService {
         creditRecord.setTotalRegisteredCredits(newTotalCredits);
         studentSemesterCreditRepository.save(creditRecord);
 
+        section.setCurrentEnrollment(section.getCurrentEnrollment() + 1);
+        courseSectionRepository.saveAndFlush(section);
+
         CourseSectionStudent enrollment = CourseSectionStudent.builder()
                 .id(id)
                 .courseSection(section)
@@ -130,6 +142,7 @@ public class EnrollmentService implements IEnrollmentService {
 
     @Override
     @Transactional
+    @Retryable(value = ObjectOptimisticLockingFailureException.class, maxAttempts = 5, backoff = @Backoff(delay = 50))
     public void cancelCourseSection(String sectionId) {
         String studentId = SecurityContextHolder.getContext().getAuthentication().getName();
         CourseSectionStudentId id = new CourseSectionStudentId(sectionId, studentId);
@@ -156,6 +169,9 @@ public class EnrollmentService implements IEnrollmentService {
 
         creditRecord.setTotalRegisteredCredits(Math.max(0, newTotalCredits));
         studentSemesterCreditRepository.save(creditRecord);
+
+        section.setCurrentEnrollment(Math.max(0, section.getCurrentEnrollment() - 1));
+        courseSectionRepository.saveAndFlush(section);
 
         enrollmentRepository.delete(enrollment);
         

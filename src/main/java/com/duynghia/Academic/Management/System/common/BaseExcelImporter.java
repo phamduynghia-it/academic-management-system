@@ -25,7 +25,7 @@ public abstract class BaseExcelImporter {
         List<String> errors = new ArrayList<>();
 
         try (InputStream inputStream = file.getInputStream();
-             Workbook workbook = new XSSFWorkbook(inputStream)) {
+             Workbook workbook = WorkbookFactory.create(inputStream)) {
 
             Sheet sheet = workbook.getSheetAt(0);
 
@@ -64,7 +64,8 @@ public abstract class BaseExcelImporter {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException("File Excel không hợp lệ hoặc bị hỏng!");
+            log.error("Lỗi khi đọc file Excel: ", e);
+            throw new AppException(ErrorCode.FILE_FORMAT_INVALID);
         }
 
         return ImportResponse.builder()

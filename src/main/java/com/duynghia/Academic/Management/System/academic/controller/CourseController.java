@@ -34,7 +34,8 @@ public class CourseController {
         if (file.isEmpty()) {
             throw new AppException(ErrorCode.FILE_IS_EMPTY);
         }
-        if (file.getOriginalFilename() == null || !file.getOriginalFilename().endsWith(".xlsx")) {
+        String filename = file.getOriginalFilename();
+        if (filename == null || (!filename.endsWith(".xlsx") && !filename.endsWith(".xls"))) {
             throw new AppException(ErrorCode.FILE_FORMAT_INVALID);
         }
         ImportResponse result = courseExcelService.importData(file);

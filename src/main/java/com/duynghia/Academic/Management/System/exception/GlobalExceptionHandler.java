@@ -52,6 +52,18 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    // Bat loi Race Condition (Optimistic Locking)
+    @ExceptionHandler(value = org.springframework.orm.ObjectOptimisticLockingFailureException.class)
+    ResponseEntity<ApiResponse<?>> handleOptimisticLockingFailureException(org.springframework.orm.ObjectOptimisticLockingFailureException e) {
+        log.warn("Optimistic locking failure: {}", e.getMessage());
+        ErrorCode errorCode = ErrorCode.REGISTRATION_CONFLICT;
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
+        return ResponseEntity.status(errorCode.getHttpStatusCode()).body(apiResponse);
+    }
+
     // Bat loi validate DTO khong hop le
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
