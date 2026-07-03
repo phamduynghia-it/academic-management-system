@@ -5,6 +5,8 @@ import com.duynghia.Academic.Management.System.exception.AppException;
 import com.duynghia.Academic.Management.System.exception.ErrorCode;
 import com.duynghia.Academic.Management.System.identity.dto.request.AuthenticationRequest;
 import com.duynghia.Academic.Management.System.identity.dto.request.IntrospectRequest;
+import com.duynghia.Academic.Management.System.identity.dto.request.LogoutRequest;
+import com.duynghia.Academic.Management.System.identity.dto.request.RefreshRequest;
 import com.duynghia.Academic.Management.System.identity.dto.response.AuthenticationResponse;
 import com.duynghia.Academic.Management.System.identity.dto.response.IntrospectResponse;
 import com.duynghia.Academic.Management.System.identity.entities.User;
@@ -29,6 +31,7 @@ public class AuthenService implements IAuthenService {
     PasswordEncoder passwordEncoder;
     UserRepository userRepository;
     JwtService jwtService;
+    RefreshTokenService refreshService;
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -40,8 +43,10 @@ public class AuthenService implements IAuthenService {
         }
         try {
             String token = jwtService.generateToken(request.getUsername());
+            var refreshToken = refreshService.createRefreshToken(user);
             return AuthenticationResponse.builder()
                     .token(token)
+                    .refreshToken(refreshToken.getToken())
                     .build();
         } catch (JOSEException e) {
             log.info("can't create token");
@@ -55,11 +60,53 @@ public class AuthenService implements IAuthenService {
         boolean isValid = true;
 
         try {
-            jwtService.verifyToken(token, false);
+            jwtService.verifyToken(token);
         } catch (AppException e) {
             isValid = false;
         }
 
         return IntrospectResponse.builder().valid(isValid).build();
+    }
+
+    @Override
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        try {
+            jwtService.invalidateToken(request.getToken());
+        } catch (AppException e) {
+            log.info("Token already invalid");
+        }
+
+        try {
+            var refreshToken = refreshService.findByToken(request.getRefreshToken());
+            refreshService.revokeToken(refreshToken);
+        } catch (AppException e) {
+            log.info("Refresh token not found or already invalid");
+        }
+    }
+
+    @Override
+    public AuthenticationResponse refreshToken(RefreshRequest request) {
+        return java.util.Optional.of(refreshService.findByToken(request.getRefreshToken()))
+                .map(token -> {
+                    if (token.isRevoked()) {
+                        refreshService.revokeAllUserTokens(token.getUser());
+                        throw new AppException(ErrorCode.UNAUTHENTICATED);
+                    }
+                    return refreshService.verifyExpiration(token);
+                })
+                .map(token -> {
+                    refreshService.revokeToken(token);
+                    User user = token.getUser();
+                    try {
+                        String newAccessToken = jwtService.generateToken(user.getUsername());
+                        var newRefreshToken = refreshService.createRefreshToken(user);
+                        return AuthenticationResponse.builder()
+                                .token(newAccessToken)
+                                .refreshToken(newRefreshToken.getToken())
+                                .build();
+                    } catch (JOSEException e) {
+                        throw new RuntimeException(e);
+                    }
+                }).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
     }
 }

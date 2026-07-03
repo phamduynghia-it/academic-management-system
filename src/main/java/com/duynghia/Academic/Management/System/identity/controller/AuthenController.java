@@ -2,8 +2,11 @@ package com.duynghia.Academic.Management.System.identity.controller;
 
 import com.duynghia.Academic.Management.System.common.ApiResponse;
 import com.duynghia.Academic.Management.System.identity.dto.request.AuthenticationRequest;
+import com.duynghia.Academic.Management.System.identity.dto.request.LogoutRequest;
 import com.duynghia.Academic.Management.System.identity.dto.response.AuthenticationResponse;
 import com.duynghia.Academic.Management.System.identity.service.IAuthenService;
+import com.nimbusds.jose.JOSEException;
+import java.text.ParseException;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,19 @@ public class AuthenController {
     public ApiResponse<AuthenticationResponse> authenticate(@RequestBody @Valid AuthenticationRequest request) {
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(authenService.authenticate(request))
+                .build();
+    }
+
+    @PostMapping("/logout")
+    public ApiResponse<Void> logout(@RequestBody @Valid LogoutRequest request) throws ParseException, JOSEException {
+        authenService.logout(request);
+        return ApiResponse.<Void>builder().build();
+    }
+
+    @PostMapping("/refresh")
+    public ApiResponse<AuthenticationResponse> refresh(@RequestBody @Valid com.duynghia.Academic.Management.System.identity.dto.request.RefreshRequest request) {
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(authenService.refreshToken(request))
                 .build();
     }
 }

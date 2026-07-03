@@ -2,6 +2,8 @@ package com.duynghia.Academic.Management.System.identity.service;
 
 import com.duynghia.Academic.Management.System.identity.dto.request.AuthenticationRequest;
 import com.duynghia.Academic.Management.System.identity.dto.request.IntrospectRequest;
+import com.duynghia.Academic.Management.System.identity.dto.request.LogoutRequest;
+import com.duynghia.Academic.Management.System.identity.dto.request.RefreshRequest;
 import com.duynghia.Academic.Management.System.identity.dto.response.AuthenticationResponse;
 import com.duynghia.Academic.Management.System.identity.dto.response.IntrospectResponse;
 import com.nimbusds.jose.JOSEException;
@@ -14,4 +16,7 @@ public interface IAuthenService {
     IntrospectResponse introspect(IntrospectRequest request)
             throws JOSEException, ParseException;
 
+    AuthenticationResponse refreshToken(RefreshRequest request);
+
+    void logout(LogoutRequest request) throws ParseException, JOSEException;
 }

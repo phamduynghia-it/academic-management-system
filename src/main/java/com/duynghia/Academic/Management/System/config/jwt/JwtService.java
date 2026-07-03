@@ -2,7 +2,6 @@ package com.duynghia.Academic.Management.System.config.jwt;
 
 import com.duynghia.Academic.Management.System.exception.AppException;
 import com.duynghia.Academic.Management.System.exception.ErrorCode;
-import com.duynghia.Academic.Management.System.identity.repository.InvalidatedTokenRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -12,10 +11,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
 
@@ -28,7 +27,7 @@ public class JwtService {
     private long expirationMs;
     private long refreshExpirationMs;
     @Autowired
-    private InvalidatedTokenRepository invalidatedTokenRepository;
+    private StringRedisTemplate stringRedisTemplate;
 
     public String generateToken(String username) throws JOSEException {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
@@ -45,27 +44,31 @@ public class JwtService {
         return jwsObject.serialize();
     }
 
-    public SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
+    public SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(secretKey.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
 
-        Date expiryTime = (isRefresh)
-                ? new Date(signedJWT
-                .getJWTClaimsSet()
-                .getIssueTime()
-                .toInstant()
-                .plus(refreshExpirationMs, ChronoUnit.SECONDS)
-                .toEpochMilli())
-                : signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
         var verified = signedJWT.verify(verifier);
 
         if (!(verified && expiryTime.after(new Date()))) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
-        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+        if (Boolean.TRUE.equals(stringRedisTemplate.hasKey("blacklist:" + signedJWT.getJWTClaimsSet().getJWTID())))
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         return signedJWT;
+    }
+
+    public void invalidateToken(String token) throws JOSEException, ParseException {
+        SignedJWT signedJWT = verifyToken(token);
+        String jwtID = signedJWT.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        long timeToLive = expiryTime.getTime() - System.currentTimeMillis();
+        if (timeToLive > 0) {
+            stringRedisTemplate.opsForValue().set("blacklist:" + jwtID, "invalid", timeToLive, java.util.concurrent.TimeUnit.MILLISECONDS);
+        }
     }
 }
